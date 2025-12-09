@@ -6,3 +6,4 @@ django-crispy-forms
 crispy-bootstrap5
 razorpay
 psycopg2-binary
+dj-database-url
