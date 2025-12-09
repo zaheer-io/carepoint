@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Book Appointment - Care Point Hospital{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Book an Appointment</h1>
+        </div>
+        
+        <div class="card" style="max-width: 800px; margin: 0 auto;">
+            <div class="card-header">
+                <h4>Schedule Visit</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" id="booking-form">
+                    {% csrf_token %}
+                    
+                    <h5 class="text-secondary mb-3" style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">1. Choose Specialist</h5>
+                    <div class="grid grid-2 mb-4">
+                        <div class="form-group">
+                            <label for="department-select">Department</label>
+                            <select name="department" id="department-select" class="form-control" required>
+                                <option value="">Choose a department...</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept.id }}">{{ dept.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="doctor-select">Doctor</label>
+                            <select name="doctor" id="doctor-select" class="form-control" required disabled>
+                                <option value="">First select a department...</option>
+                            </select>
+                            <div id="doctor-info" class="mt-2 p-2 bg-light rounded" style="display: none; border-left: 3px solid var(--primary-color);">
+                                <small class="text-secondary d-block">Specialization: <strong id="doc-spec" class="text-dark"></strong></small>
+                                <small class="text-secondary d-block">Consultation Fee: <strong class="text-dark">₹<span id="doc-fee"></span></strong></small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--border-color);">
+                    
+                    <h5 class="text-secondary mb-3" style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">2. Select Timing</h5>
+                    <div class="grid grid-2 mb-4">
+                        <div class="form-group">
+                            <label for="scheduled_date">Date</label>
+                            <input type="date" name="scheduled_date" id="scheduled_date" class="form-control" required min="{{ today }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="scheduled_time">Time</label>
+                            <input type="time" name="scheduled_time" id="scheduled_time" class="form-control" required>
+                            <small class="text-muted">Clinic hours: 09:00 - 17:00</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-4">
+                        <label for="reason">Reason for Visit</label>
+                        <textarea name="reason" id="reason" class="form-control" rows="3" placeholder="Briefly describe your symptoms..." style="resize: none;"></textarea>
+                    </div>
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger mb-4">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                {{ error }}<br>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            {{ error }}<br>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Confirm Booking</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('department-select').addEventListener('change', function() {
+    const deptId = this.value;
+    const doctorSelect = document.getElementById('doctor-select');
+    const doctorInfo = document.getElementById('doctor-info');
+    
+    doctorSelect.innerHTML = '<option value="">Loading doctors...</option>';
+    doctorSelect.disabled = true;
+    doctorInfo.style.display = 'none';
+    
+    if (deptId) {
+        fetch(`/patient/api/doctors-by-department/?department_id=${deptId}`)
+            .then(response => response.json())
+            .then(data => {
+                doctorSelect.innerHTML = '<option value="">Select a doctor...</option>';
+                data.doctors.forEach(doc => {
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = doc.name;
+                    option.dataset.spec = doc.specialization;
+                    option.dataset.fee = doc.fee;
+                    doctorSelect.appendChild(option);
+                });
+                doctorSelect.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                doctorSelect.innerHTML = '<option value="">Error loading doctors</option>';
+            });
+    } else {
+        doctorSelect.innerHTML = '<option value="">First select a department...</option>';
+        doctorSelect.disabled = true;
+    }
+});
+
+document.getElementById('doctor-select').addEventListener('change', function() {
+    const selected = this.options[this.selectedIndex];
+    const doctorInfo = document.getElementById('doctor-info');
+    
+    if (selected.value) {
+        document.getElementById('doc-spec').textContent = selected.dataset.spec || 'General';
+        document.getElementById('doc-fee').textContent = selected.dataset.fee;
+        doctorInfo.style.display = 'block';
+    } else {
+        doctorInfo.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

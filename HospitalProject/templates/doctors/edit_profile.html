@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Edit Profile - Care Point Hospital{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Edit Doctor Profile</h1>
+        </div>
+        
+        <div class="card" style="max-width: 98%; margin: 0 auto;">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <h5 class="text-secondary mb-3" style="font-size: 0.9rem; text-transform: uppercase;">Professional Details</h5>
+                    <div class="form-group">
+                        <label>Department</label>
+                        {{ form.department }}
+                    </div>
+                    
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label>Qualifications</label>
+                            {{ form.qualifications }}
+                        </div>
+                        <div class="form-group">
+                            <label>Specialization</label>
+                            {{ form.specialization }}
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label>Years of Experience</label>
+                            {{ form.experience_years }}
+                        </div>
+                        <div class="form-group">
+                            <label>Consultation Fee (₹)</label>
+                            {{ form.consultation_fee }}
+                        </div>
+                    </div>
+                    
+                    <hr style="margin: 2rem 0; border: 0; border-top: 1px solid var(--border-color);">
+                    
+                    <h5 class="text-secondary mb-3" style="font-size: 0.9rem; text-transform: uppercase;">Availability & Bio</h5>
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label>Available From</label>
+                            {{ form.available_from }}
+                        </div>
+                        <div class="form-group">
+                            <label>Available To</label>
+                            {{ form.available_to }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Bio</label>
+                        {{ form.bio }}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="{% url 'doctors:dashboard' %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

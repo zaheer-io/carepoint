@@ -1,0 +1,379 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Care Point Hospital - Advanced Healthcare{% endblock %}
+
+{% block base_css %}
+<link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="landing-page">
+    <!-- Navbar -->
+    <nav class="navbar-landing" id="navbar">
+        <div class="container nav-container">
+            <div class="brand">
+                <span class="brand-text">Care Point</span>
+                <span class="brand-dot">.</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <a href="{% url 'accounts:login' %}" class="nav-link">Login</a>
+                <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-nav">Sign Up</a>
+            </div>
+            <button class="mobile-toggle" id="mobileToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section">
+        <div class="hero-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-icon">✨</span>
+                    <span>Trusted by 5,000+ Patients</span>
+                </div>
+                <h1 class="hero-title">
+                    Advanced Healthcare <br>
+                    <span class="gradient-text">For You & Your Family</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Book appointments with top specialists, manage your prescriptions, and track your health history—all in one seamless platform.
+                </p>
+                <div class="hero-buttons">
+                    <a href="{% url 'accounts:register_patient' %}" class="btn btn-primary btn-large">
+                        <span>Book Appointment</span>
+                        <svg class="btn-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-large">
+                        <span>Patient Portal</span>
+                    </a>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">👨‍⚕️</div>
+                        <div class="stat-content">
+                            <strong class="stat-number" data-target="20">0</strong>
+                            <span class="stat-label">Specialists</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏰</div>
+                        <div class="stat-content">
+                            <strong class="stat-number">24/7</strong>
+                            <span class="stat-label">Emergency Support</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">❤️</div>
+                        <div class="stat-content">
+                            <strong class="stat-number" data-target="5000">0</strong>
+                            <span class="stat-label">Happy Patients</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-scroll">
+            <span>Scroll to explore</span>
+            <div class="scroll-indicator"></div>
+        </div>
+    </header>
+
+    <!-- Services Section -->
+    <section class="services-section" id="services">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Our Services</span>
+                <h2 class="section-title">Why Choose Care Point?</h2>
+                <p class="section-subtitle">Comprehensive medical services designed for your well-being, powered by modern technology and compassionate care.</p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-card-inner">
+                        <div class="service-icon">
+                            <span class="icon-emoji">👨‍⚕️</span>
+                        </div>
+                        <h3 class="service-title">Expert Doctors</h3>
+                        <p class="service-description">Access to highly qualified specialists across various departments including Cardiology, Neurology, and Pediatrics.</p>
+                        <div class="service-features">
+                            <div class="feature-item">✓ Board Certified</div>
+                            <div class="feature-item">✓ Years of Experience</div>
+                            <div class="feature-item">✓ Patient-Centered Care</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-card-inner">
+                        <div class="service-icon">
+                            <span class="icon-emoji">📅</span>
+                        </div>
+                        <h3 class="service-title">Easy Booking</h3>
+                        <p class="service-description">Seamless online appointment scheduling. View doctor availability and book instantly without waiting in long queues.</p>
+                        <div class="service-features">
+                            <div class="feature-item">✓ Real-Time Availability</div>
+                            <div class="feature-item">✓ Instant Confirmation</div>
+                            <div class="feature-item">✓ Flexible Rescheduling</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-card-inner">
+                        <div class="service-icon">
+                            <span class="icon-emoji">💊</span>
+                        </div>
+                        <h3 class="service-title">Integrated Pharmacy</h3>
+                        <p class="service-description">Order prescriptions directly from your dashboard and track pharmacy orders with home delivery options.</p>
+                        <div class="service-features">
+                            <div class="feature-item">✓ Digital Prescriptions</div>
+                            <div class="feature-item">✓ Order Tracking</div>
+                            <div class="feature-item">✓ Home Delivery</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="features-content">
+                <div class="features-text">
+                    <span class="section-tag">Advanced Features</span>
+                    <h2 class="section-title">Everything You Need in One Place</h2>
+                    <p class="features-intro">Our platform combines cutting-edge technology with personalized healthcare to give you complete control over your medical journey.</p>
+                    
+                    <div class="features-list">
+                        <div class="feature-item-large">
+                            <div class="feature-icon-small">📊</div>
+                            <div>
+                                <h4>Health Records Management</h4>
+                                <p>Securely store and access your complete medical history, test results, and prescriptions anytime, anywhere.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item-large">
+                            <div class="feature-icon-small">🔔</div>
+                            <div>
+                                <h4>Smart Reminders</h4>
+                                <p>Never miss an appointment or medication with intelligent notifications and automated reminders.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item-large">
+                            <div class="feature-icon-small">💬</div>
+                            <div>
+                                <h4>Teleconsultation</h4>
+                                <p>Connect with doctors virtually for follow-ups and consultations from the comfort of your home.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="features-visual">
+                    <div class="mockup-container">
+                        <div class="mockup-card mockup-1">
+                            <div class="mockup-header">
+                                <div class="mockup-dots">
+                                    <span></span><span></span><span></span>
+                                </div>
+                            </div>
+                            <div class="mockup-content">
+                                <div class="mockup-title">Upcoming Appointments</div>
+                                <div class="appointment-item">
+                                    <div class="appointment-icon">👨‍⚕️</div>
+                                    <div class="appointment-details">
+                                        <div class="appointment-name">Dr. Anjana S</div>
+                                        <div class="appointment-time">Today, 2:30 PM</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mockup-card mockup-2">
+                            <div class="mockup-header">
+                                <div class="mockup-dots">
+                                    <span></span><span></span><span></span>
+                                </div>
+                            </div>
+                            <div class="mockup-content">
+                                <div class="mockup-title">Health Stats</div>
+                                <div class="health-stat">
+                                    <span>Heart Rate</span>
+                                    <strong>72 bpm</strong>
+                                </div>
+                                <div class="health-stat">
+                                    <span>Blood Pressure</span>
+                                    <strong>120/80</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Testimonials</span>
+                <h2 class="section-title">What Our Patients Say</h2>
+            </div>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Care Point made managing my family's health so much easier. The online booking system is intuitive and the doctors are excellent."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">AS</div>
+                        <div>
+                            <div class="author-name">Archana S</div>
+                            <div class="author-role">Patient since 2023</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"The 24/7 emergency support gave me peace of mind. When I needed urgent care, they were there immediately. Highly recommend!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MY</div>
+                        <div>
+                            <div class="author-name">Muhammed Yaseeen</div>
+                            <div class="author-role">Patient since 2022</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Best healthcare experience I've had. The digital prescription system and pharmacy integration saved me so much time."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">SN</div>
+                        <div>
+                            <div class="author-name">Sini NM</div>
+                            <div class="author-role">Patient since 2024</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-bg-pattern"></div>
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Prioritize Your Health?</h2>
+                <p class="cta-subtitle">Join thousands of satisfied patients who trust Care Point for their medical needs. Start your journey to better health today.</p>
+                <div class="cta-buttons">
+                    <a href="{% url 'accounts:register' %}" class="btn btn-light btn-large">
+                        <span>Get Started Today</span>
+                        <svg class="btn-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline btn-large">
+                        <span>Sign In</span>
+                    </a>
+                </div>
+                <div class="cta-trust">
+                    <span>🔒 Your data is secure and HIPAA compliant</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="footer-brand">
+                        <span class="brand-text">Care Point</span>
+                        <span class="brand-dot">.</span>
+                    </div>
+                    <p class="footer-description">Providing world-class healthcare with a personal touch. Your health is our priority, and your trust is our foundation.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link">📘</a>
+                        <a href="#" class="social-link">🐦</a>
+                        <a href="#" class="social-link">📷</a>
+                        <a href="#" class="social-link">💼</a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="{% url 'accounts:login' %}">Login</a></li>
+                        <li><a href="{% url 'accounts:register' %}">Register</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4 class="footer-title">Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Book Appointment</a></li>
+                        <li><a href="#">Teleconsultation</a></li>
+                        <li><a href="#">Pharmacy</a></li>
+                        <li><a href="#">Health Records</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4 class="footer-title">Contact Us</h4>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <span class="contact-icon">📞</span>
+                            <span>+91 1800-123-4567</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📧</span>
+                            <span>support@carepoint.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📍</span>
+                            <span>Kollam, Kerala, India</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© 2024 Care Point Hospital. All rights reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <span>•</span>
+                    <a href="#">Terms of Service</a>
+                    <span>•</span>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/landing.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+{% block title %}Medicines - Admin Panel{% endblock %}
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Medicines</h1>
+            <a href="{% url 'adminpanel:medicine_create' %}" class="btn btn-primary">+ Add Medicine</a>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                {% if medicines %}
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Name</th><th>Price</th><th>Stock</th><th>Rx Required</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for med in medicines %}
+                            <tr>
+                                <td><strong>{{ med.name }}</strong></td>
+                                <td>₹{{ med.price }}</td>
+                                <td>{{ med.stock }} {{ med.unit }}</td>
+                                <td>{% if med.prescription_required %}<span class="badge badge-warning">Yes</span>{% else %}<span class="badge badge-success">No</span>{% endif %}</td>
+                                <td class="action-buttons">
+                                    <a href="{% url 'adminpanel:medicine_edit' med.pk %}" class="btn btn-sm btn-secondary">Edit</a>
+                                    <a href="{% url 'adminpanel:medicine_delete' med.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><p>No medicines yet</p><a href="{% url 'adminpanel:medicine_create' %}" class="btn btn-primary mt-2">Add First Medicine</a></div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

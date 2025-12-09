@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Appointments - Care Point Hospital{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">My Appointments</h1>
+        </div>
+        
+        <!-- Filters -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <form method="get" class="d-flex gap-2 align-center">
+                    <select name="status" class="form-control" style="max-width: 200px;">
+                        <option value="">All Status</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                    <button type="submit" class="btn btn-secondary">Filter</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                {% if appointments %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Patient</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for apt in appointments %}
+                            <tr>
+                                <td>{{ apt.scheduled_datetime|date:"M d, Y H:i" }}</td>
+                                <td>{{ apt.patient }}</td>
+                                <td>{{ apt.reason|truncatewords:5|default:"-" }}</td>
+                                <td><span class="badge badge-{{ apt.status }}">{{ apt.get_status_display }}</span></td>
+                                <td>
+                                    {% with pay_info=apt.payment_details %}
+                                    <span class="badge badge-{{ pay_info.css }}">{{ pay_info.label }}</span>
+                                    {% endwith %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'doctors:appointment_detail' apt.pk %}" class="btn btn-sm btn-secondary">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <p>No appointments found</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

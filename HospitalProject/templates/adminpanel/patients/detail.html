@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Patient Details - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Patient Profile</h1>
+            <a href="{% url 'adminpanel:patient_list' %}" class="btn btn-secondary">← Back to List</a>
+        </div>
+        
+        <!-- Profile Header -->
+        <div class="profile-header-card">
+            <div class="profile-avatar" style="background: var(--secondary-color);">
+                {% if patient.user.profile_picture %}
+                <img src="{{ patient.user.profile_picture.url }}" alt="{{ patient.user.get_full_name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                {% else %}
+                {{ patient.user.first_name|first }}{{ patient.user.last_name|first }}
+                {% endif %}
+            </div>
+            
+            <div class="profile-info" style="flex: 1;">
+                <h2>{{ patient.user.get_full_name|default:patient.user.username }}</h2>
+                <div class="profile-badges">
+                    <span class="badge badge-info">{{ patient.get_gender_display|default:"Gender Not Set" }}</span>
+                    {% if patient.blood_group %}
+                    <span class="badge badge-danger">{{ patient.blood_group }}</span>
+                    {% endif %}
+                    <span class="badge badge-secondary">Patient</span>
+                </div>
+                <div class="mt-2 text-secondary">
+                    <span style="margin-right: 1.5rem;">📧 {{ patient.user.email }}</span>
+                    {% if patient.user.phone %}
+                    <span>📱 {{ patient.user.phone }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="stat-card" style="min-width: 200px; padding: 1rem;">
+                <div class="stat-content">
+                    <h3>{{ appointments.count }}</h3>
+                    <p>Recent Visits</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="detail-grid">
+            <!-- Left Column: Personal Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h4>Personal Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="label">Age / DOB</span>
+                        <span class="value">
+                            {% if patient.date_of_birth %}
+                            {{ patient.age }} years ({{ patient.date_of_birth|date:"M d, Y" }})
+                            {% else %}
+                            -
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Gender</span>
+                        <span class="value">{{ patient.get_gender_display|default:"-" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Blood Group</span>
+                        <span class="value">{{ patient.blood_group|default:"-" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Address</span>
+                        <span class="value">{{ patient.address|default:"-" }}</span>
+                    </div>
+                </div>
+                
+                <div class="card-header" style="border-top: 1px solid var(--border-color);">
+                    <h4>Emergency Contact</h4>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="label">Name</span>
+                        <span class="value">{{ patient.emergency_contact_name|default:"-" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Phone</span>
+                        <span class="value">{{ patient.emergency_contact_phone|default:"-" }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column: Medical History & Appointments -->
+            <div>
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h4>Medical History</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if patient.medical_history or patient.allergies %}
+                            {% if patient.medical_history %}
+                            <div class="mb-3">
+                                <h5 class="text-secondary" style="font-size: 0.85rem; text-transform: uppercase;">History</h5>
+                                <p>{{ patient.medical_history }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if patient.allergies %}
+                            <div>
+                                <h5 class="text-secondary" style="font-size: 0.85rem; text-transform: uppercase; color: var(--danger-color);">Allergies</h5>
+                                <p>{{ patient.allergies }}</p>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                        <p class="text-muted">No medical history or allergies recorded.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Recent Appointments</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        {% if appointments %}
+                        <table style="font-size: 0.9rem;">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 0.75rem 1.5rem;">Date</th>
+                                    <th style="padding: 0.75rem 1.5rem;">Doctor</th>
+                                    <th style="padding: 0.75rem 1.5rem;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for apt in appointments %}
+                                <tr>
+                                    <td style="padding: 0.75rem 1.5rem;">{{ apt.scheduled_datetime|date:"M d" }}</td>
+                                    <td style="padding: 0.75rem 1.5rem;">Dr. {{ apt.doctor.user.last_name }}</td>
+                                    <td style="padding: 0.75rem 1.5rem;">
+                                        <span class="badge badge-{{ apt.status }}">{{ apt.get_status_display }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <p class="text-muted" style="padding: 1.5rem;">No recent appointments.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

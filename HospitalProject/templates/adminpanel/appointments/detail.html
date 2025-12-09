@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+{% block title %}Appointment Details - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Appointment Details</h1>
+            <a href="{% url 'adminpanel:appointment_list' %}" class="btn btn-secondary">← Back to List</a>
+        </div>
+        
+        <div class="detail-grid">
+            <!-- Left Column: Appointment Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h4>Visit Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="label">Status</span>
+                        <span class="value"><span class="badge badge-{{ appointment.status }}">{{ appointment.get_status_display }}</span></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Date & Time</span>
+                        <span class="value">
+                            {{ appointment.scheduled_datetime|date:"M d, Y" }}<br>
+                            {{ appointment.scheduled_datetime|time:"H:i" }} ({{ appointment.duration_minutes }} min)
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Reason</span>
+                        <span class="value">{{ appointment.reason|default:"-" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Payment</span>
+                        <span class="value">
+                            {% with pay_info=appointment.payment_details %}
+                            <span class="badge badge-{{ pay_info.css }}">{{ pay_info.label }}</span>
+                            {% endwith %}
+                        </span>
+                    </div>
+                    
+                    {% if appointment.status not in 'cancelled,completed' %}
+                    <div class="mt-4 pt-3 border-top">
+                        <h5 class="text-secondary mb-2" style="font-size: 0.8rem; text-transform: uppercase;">Admin Actions</h5>
+                        <a href="{% url 'adminpanel:appointment_cancel' appointment.pk %}" class="btn btn-danger w-100" onclick="return confirm('Force cancel this appointment?');">Force Cancel</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Right Column: Parties Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h4>Parties Involved</h4>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="label">Patient</span>
+                        <span class="value">
+                            <a href="{% url 'adminpanel:patient_detail' appointment.patient.pk %}">{{ appointment.patient }}</a>
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Doctor</span>
+                        <span class="value">
+                            <a href="{% url 'adminpanel:doctor_detail' appointment.doctor.pk %}">Dr. {{ appointment.doctor.user.last_name }}</a>
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Department</span>
+                        <span class="value">{{ appointment.department.name }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

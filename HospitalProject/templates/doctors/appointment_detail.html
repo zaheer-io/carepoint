@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Appointment Details - Care Point Hospital{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Appointment Details</h1>
+            <a href="{% url 'doctors:appointment_list' %}" class="btn btn-secondary">← Back to Appointments</a>
+        </div>
+        
+        <div class="detail-grid">
+            <!-- Left Column: Patient Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h4>Patient Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="label">Patient Name</span>
+                        <span class="value">{{ appointment.patient }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Contact</span>
+                        <span class="value">
+                            <div>{{ appointment.patient.user.phone|default:"-" }}</div>
+                            <div class="text-secondary" style="font-size: 0.9rem;">{{ appointment.patient.user.email }}</div>
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Gender/Age</span>
+                        <span class="value">
+                            {{ appointment.patient.get_gender_display|default:"-" }}
+                            {% if appointment.patient.age %} / {{ appointment.patient.age }} yrs{% endif %}
+                        </span>
+                    </div>
+                    {% if appointment.patient.blood_group %}
+                    <div class="info-row">
+                        <span class="label">Blood Group</span>
+                        <span class="value">{{ appointment.patient.blood_group }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="card-header" style="border-top: 1px solid var(--border-color);">
+                    <h4>Medical Context</h4>
+                </div>
+                <div class="card-body">
+                    {% if appointment.patient.allergies %}
+                    <div class="mb-3">
+                        <strong class="text-danger" style="font-size: 0.8rem; text-transform: uppercase;">Allergies</strong>
+                        <p>{{ appointment.patient.allergies }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if appointment.patient.medical_history %}
+                    <div>
+                        <strong class="text-secondary" style="font-size: 0.8rem; text-transform: uppercase;">Medical History</strong>
+                        <p class="text-secondary">{{ appointment.patient.medical_history }}</p>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No medical history recorded.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Right Column: Appointment Details & Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h4>Visit Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="label">Status</span>
+                        <span class="value"><span class="badge badge-{{ appointment.status }}">{{ appointment.get_status_display }}</span></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Date & Time</span>
+                        <span class="value">
+                            {{ appointment.scheduled_datetime|date:"M d, Y" }}<br>
+                            {{ appointment.scheduled_datetime|time:"H:i" }}
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Reason</span>
+                        <span class="value">{{ appointment.reason|default:"No reason provided" }}</span>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5 class="text-secondary mb-2" style="font-size: 0.8rem; text-transform: uppercase;">Actions</h5>
+                        <div class="action-buttons" style="flex-direction: column;">
+                            {% if appointment.status == 'pending' %}
+                            <a href="{% url 'doctors:confirm_appointment' appointment.pk %}" class="btn btn-success w-100">✓ Confirm Appointment</a>
+                            <a href="{% url 'doctors:cancel_appointment' appointment.pk %}" class="btn btn-danger w-100">✕ Cancel</a>
+                            
+                            {% elif appointment.status == 'confirmed' %}
+                            <a href="{% url 'doctors:complete_appointment' appointment.pk %}" class="btn btn-primary w-100">✓ Complete Visit</a>
+                            <a href="{% url 'doctors:cancel_appointment' appointment.pk %}" class="btn btn-danger w-100">✕ Cancel</a>
+                            
+                            {% elif appointment.status == 'completed' %}
+                            {% if not appointment.prescription %}
+                            <a href="{% url 'doctors:create_prescription' appointment.pk %}" class="btn btn-primary w-100">📝 Write Prescription</a>
+                            {% else %}
+                            <a href="{% url 'doctors:view_prescription' appointment.prescription.pk %}" class="btn btn-secondary w-100">📄 View Prescription</a>
+                            {% endif %}
+                            {% endif %}
+                        
+                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                            {% if appointment.payment_status == 'paid' %}
+                            <div class="alert alert-success text-center mb-0">
+                                {% with pay_info=appointment.payment_details %}
+                                <span style="font-size: 1.2rem;">✓</span> {{ pay_info.label }} Received
+                                {% endwith %}
+                            </div>
+                            {% elif appointment.payment_status == 'unpaid' %}
+                                {% if appointment.status == 'confirmed' or appointment.status == 'completed' %}
+                                <a href="{% url 'doctors:mark_appointment_paid' appointment.pk %}" 
+                                   class="btn btn-success w-100" >
+                                   Mark Payment Received
+                                </a>
+                                <p class="text-center mt-2 text-secondary" style="font-size: 0.8rem;">Click if patient pays offline/cash</p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

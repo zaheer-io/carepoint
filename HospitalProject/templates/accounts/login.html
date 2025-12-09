@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Login - Care Point Hospital{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin-bottom: 1rem;">
+                <svg viewBox="0 0 24 24" fill="currentColor" style="width: 40px; height: 40px;">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/>
+                </svg>
+                Care Point
+            </div>
+            <h1>Welcome Back</h1>
+            <p>Sign in to access your account</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                <label for="id_password">Password</label>
+                {{ form.password }}
+            </div>
+            
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                Invalid username or password. Please try again.
+            </div>
+            {% endif %}
+            
+            <button type="submit" class="btn btn-primary w-100 btn-lg">Sign In</button>
+        </form>
+        
+        <div class="auth-footer">
+            <a href="{% url 'accounts:home' %}" class="btn-back-home">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Home
+            </a>
+            <p style="margin-top: 1rem;">Don't have an account? <a href="{% url 'accounts:register' %}">Register here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

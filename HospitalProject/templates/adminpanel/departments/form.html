@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}{{ title }} - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">{{ title }}</h1>
+            <a href="{% url 'adminpanel:department_list' %}" class="btn btn-secondary">← Back</a>
+        </div>
+        
+        <div class="card" style="max-width: 98%; margin: 0 auto;">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label>Department Name *</label>
+                        {{ form.name }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description</label>
+                        {{ form.description }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Image</label>
+                        {% if department.image %}
+                        <div class="mb-2">
+                            <img src="{{ department.image.url }}" alt="{{ department.name }}" style="max-width: 200px; border-radius: 8px; margin-bottom: 10px;">
+                            <p class="text-secondary">Current image. Upload a new one to replace.</p>
+                        </div>
+                        {% endif %}
+                        <input type="file" name="image" class="form-control" accept="image/*" id="image-input">
+                        <div id="image-preview" style="margin-top: 10px; display: none;">
+                            <img id="preview-img" src="" alt="Preview" style="max-width: 200px; border-radius: 8px;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="form-check">
+                            {{ form.is_active }} <label>Active</label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a href="{% url 'adminpanel:department_list' %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Image preview
+document.getElementById('image-input').addEventListener('change', function(e) {
+    const preview = document.getElementById('image-preview');
+    const previewImg = document.getElementById('preview-img');
+    if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            previewImg.src = event.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    }
+});
+</script>
+{% endblock %}

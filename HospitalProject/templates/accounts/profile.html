@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Profile - Care Point Hospital{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">My Profile</h1>
+        </div>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="detail-grid">
+                <!-- Left Column: Personal Details Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Personal Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="grid grid-2">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" name="first_name" class="form-control" value="{{ form.first_name.value|default:'' }}" required>
+                                {% if form.first_name.errors %}<small class="text-danger">{{ form.first_name.errors.0 }}</small>{% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" name="last_name" class="form-control" value="{{ form.last_name.value|default:'' }}" required>
+                                {% if form.last_name.errors %}<small class="text-danger">{{ form.last_name.errors.0 }}</small>{% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" name="email" class="form-control" value="{{ form.email.value|default:'' }}" required>
+                            {% if form.email.errors %}<small class="text-danger">{{ form.email.errors.0 }}</small>{% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" name="phone" class="form-control" value="{{ form.phone.value|default:'' }}">
+                            {% if form.phone.errors %}<small class="text-danger">{{ form.phone.errors.0 }}</small>{% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer text-right">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </div>
+                
+                <!-- Right Column: Profile Picture -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Profile Picture</h4>
+                    </div>
+                    <div class="card-body text-center">
+                        <div style="width: 150px; height: 150px; margin: 0 auto 1.5rem; border-radius: 50%; overflow: hidden; background: var(--bg-primary); display: flex; align-items: center; justify-content: center; border: 2px solid var(--border-color);">
+                            {% if request.user.profile_picture %}
+                            <img src="{{ request.user.profile_picture.url }}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                            <span style="font-size: 3rem; color: var(--text-light);">{{ request.user.first_name|first }}{{ request.user.last_name|first }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <input type="file" name="profile_picture" class="form-control" accept="image/*" id="profile-upload" style="display: none;">
+                            <label for="profile-upload" class="btn btn-secondary w-100" style="cursor: pointer;">Choose New Photo</label>
+                            <small class="text-muted d-block mt-2">Recommended: Square JPG/PNG</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+</div>
+{% endblock %}

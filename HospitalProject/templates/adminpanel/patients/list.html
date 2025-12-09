@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+{% block title %}Patients - Admin Panel{% endblock %}
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    <main class="main-content">
+        <div class="page-header"><h1 class="page-title">Patients</h1></div>
+        <div class="card">
+            <div class="card-body">
+                {% if patients %}
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for p in patients %}
+                            <tr>
+                                <td><strong>{{ p.user.get_full_name|default:p.user.username }}</strong></td>
+                                <td>{{ p.user.email }}</td>
+                                <td>{{ p.user.phone|default:"-" }}</td>
+                                <td>{{ p.user.date_joined|date:"M d, Y" }}</td>
+                                <td><a href="{% url 'adminpanel:patient_detail' p.pk %}" class="btn btn-sm btn-secondary">View</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><p>No patients yet</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

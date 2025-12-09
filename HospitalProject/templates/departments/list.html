@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+{% block title %}Departments - Care Point Hospital{% endblock %}
+{% block content %}
+<nav class="navbar"><div class="container">
+    <a href="{% url 'accounts:home' %}" class="navbar-brand">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width: 40px; height: 40px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>Care Point
+    </a>
+    <ul class="navbar-nav">
+        <li><a href="{% url 'departments:list' %}">Departments</a></li>
+        <li><a href="{% url 'pharmacy:medicine_list' %}">Pharmacy</a></li>
+        {% if request.user.is_authenticated %}
+        <li><a href="{% url 'accounts:redirect_after_login' %}" class="btn btn-primary btn-sm">Dashboard</a></li>
+        {% else %}
+        <li><a href="{% url 'accounts:login' %}" class="btn btn-secondary btn-sm">Login</a></li>
+        <li><a href="{% url 'accounts:register' %}" class="btn btn-primary btn-sm">Register</a></li>
+        {% endif %}
+    </ul>
+</div></nav>
+<div class="container" style="padding: 3rem 0;">
+    <h1 class="text-center mb-4">Our Departments</h1>
+    <div class="grid grid-3">
+        {% for dept in departments %}
+        <a href="{% url 'departments:detail' dept.slug %}" class="card" style="text-decoration: none;">
+            <div class="card-body text-center">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🏥</div>
+                <h4>{{ dept.name }}</h4>
+                <p class="text-secondary">{{ dept.description|truncatewords:15|default:"Quality healthcare services" }}</p>
+                <small class="text-primary">{{ dept.doctor_count }} Doctor{{ dept.doctor_count|pluralize }}</small>
+            </div>
+        </a>
+        {% empty %}
+        <div class="empty-state" style="grid-column: 1/-1;"><p>No departments available</p></div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

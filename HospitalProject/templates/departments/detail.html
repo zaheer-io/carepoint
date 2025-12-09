@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+{% block title %}{{ department.name }} - Care Point Hospital{% endblock %}
+{% block content %}
+<nav class="navbar"><div class="container">
+    <a href="{% url 'accounts:home' %}" class="navbar-brand">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width: 40px; height: 40px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>Care Point
+    </a>
+    <ul class="navbar-nav">
+        <li><a href="{% url 'departments:list' %}">Departments</a></li>
+        {% if request.user.is_authenticated %}
+        <li><a href="{% url 'accounts:redirect_after_login' %}" class="btn btn-primary btn-sm">Dashboard</a></li>
+        {% else %}
+        <li><a href="{% url 'accounts:login' %}" class="btn btn-primary btn-sm">Login</a></li>
+        {% endif %}
+    </ul>
+</div></nav>
+<div class="container" style="padding: 3rem 0;">
+    <a href="{% url 'departments:list' %}" class="btn btn-secondary mb-3">← All Departments</a>
+    <h1>{{ department.name }}</h1>
+    <p class="text-secondary">{{ department.description|default:"Quality healthcare services in this department." }}</p>
+    
+    <h3 class="mt-4 mb-2">Our Doctors</h3>
+    <div class="grid grid-3">
+        {% for doctor in doctors %}
+        <div class="card">
+            <div class="card-body">
+                <h4>{{ doctor.full_name }}</h4>
+                <p class="text-secondary">{{ doctor.specialization|default:"General Practice" }}</p>
+                <p>Experience: {{ doctor.experience_years }} years</p>
+                <p><strong>Fee: ₹{{ doctor.consultation_fee }}</strong></p>
+                {% if request.user.is_authenticated and request.user.is_patient %}
+                <a href="{% url 'patients:book_appointment' %}" class="btn btn-primary btn-sm">Book Appointment</a>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state" style="grid-column: 1/-1;"><p>No doctors available in this department</p></div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

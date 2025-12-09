@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Register - Care Point Hospital{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card" style="max-width: 500px;">
+        <div class="auth-header">
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin-bottom: 1rem;">
+                <svg viewBox="0 0 24 24" fill="currentColor" style="width: 40px; height: 40px;">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/>
+                </svg>
+                Care Point
+            </div>
+            <h1>Create Account</h1>
+            <p>Choose how you want to register</p>
+        </div>
+        
+        <div class="grid grid-2 gap-2">
+            <a href="{% url 'accounts:register_patient' %}" class="card text-center" style="padding: 2rem; text-decoration: none;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🏥</div>
+                <h4>I'm a Patient</h4>
+                <p class="text-secondary" style="font-size: 0.875rem;">Book appointments and manage health records</p>
+            </a>
+            <a href="{% url 'accounts:register_doctor' %}" class="card text-center" style="padding: 2rem; text-decoration: none;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍⚕️</div>
+                <h4>I'm a Doctor</h4>
+                <p class="text-secondary" style="font-size: 0.875rem;">Join our team and manage patients</p>
+            </a>
+        </div>
+        
+        <div class="auth-footer">
+            <a href="{% url 'accounts:home' %}" class="btn-back-home">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Home
+            </a>
+            <p style="margin-top: 1rem;">Already have an account? <a href="{% url 'accounts:login' %}">Login here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

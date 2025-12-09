@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+{% block title %}Invoice #{{ invoice.pk }} - Care Point Hospital{% endblock %}
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Invoice #{{ invoice.pk }}</h1>
+            <a href="{% url 'billing:invoice_list' %}" class="btn btn-secondary">← Back</a>
+        </div>
+        <div class="card" style="max-width: 600px;">
+            <div class="card-body">
+                <p><strong>Type:</strong> {{ invoice.get_invoice_type_display }}</p>
+                <p><strong>Amount:</strong> ₹{{ invoice.amount }}</p>
+                <p><strong>Status:</strong> <span class="badge badge-{{ invoice.status }}">{{ invoice.get_status_display }}</span></p>
+                <p><strong>Created:</strong> {{ invoice.created_at|date:"M d, Y H:i" }}</p>
+                {% if invoice.paid_at %}<p><strong>Paid:</strong> {{ invoice.paid_at|date:"M d, Y H:i" }}</p>{% endif %}
+                {% if invoice.razorpay_payment_id %}<p><strong>Transaction ID:</strong> {{ invoice.razorpay_payment_id }}</p>{% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

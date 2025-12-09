@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+{% block title %}Payment - Care Point Hospital{% endblock %}
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    <main class="main-content">
+        <div class="page-header"><h1 class="page-title">Payment</h1></div>
+        <div class="card" style="max-width: 500px; margin: 0 auto;">
+            <div class="card-header text-center">
+                <h4>{{ invoice.get_invoice_type_display }}</h4>
+            </div>
+            <div class="card-body text-center">
+                <p class="text-secondary">Invoice #{{ invoice.pk }}</p>
+                <p style="font-size: 2.5rem; font-weight: 700; color: var(--primary-color);">₹{{ amount }}</p>
+                <button id="pay-btn" class="btn btn-primary btn-lg w-100 mt-3">Pay with Razorpay</button>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "{{ razorpay_key_id }}",
+    "amount": "{{ amount_in_paise }}",
+    "currency": "INR",
+    "name": "Care Point Hospital",
+    "description": "{{ invoice.get_invoice_type_display }}",
+    "order_id": "{{ razorpay_order_id }}",
+    "handler": function (response){
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{% url 'billing:verify_payment' %}";
+        var csrf = document.createElement('input');
+        csrf.type = 'hidden'; csrf.name = 'csrfmiddlewaretoken'; csrf.value = '{{ csrf_token }}';
+        var orderId = document.createElement('input');
+        orderId.type = 'hidden'; orderId.name = 'razorpay_order_id'; orderId.value = response.razorpay_order_id;
+        var paymentId = document.createElement('input');
+        paymentId.type = 'hidden'; paymentId.name = 'razorpay_payment_id'; paymentId.value = response.razorpay_payment_id;
+        var signature = document.createElement('input');
+        signature.type = 'hidden'; signature.name = 'razorpay_signature'; signature.value = response.razorpay_signature;
+        form.appendChild(csrf); form.appendChild(orderId); form.appendChild(paymentId); form.appendChild(signature);
+        document.body.appendChild(form);
+        form.submit();
+    },
+    "prefill": {"name": "{{ user_name }}", "email": "{{ user_email }}", "contact": "{{ user_phone }}"},
+    "theme": {"color": "#2563eb"}
+};
+var rzp = new Razorpay(options);
+document.getElementById('pay-btn').onclick = function(e){ e.preventDefault(); rzp.open(); }
+</script>
+{% endblock %}

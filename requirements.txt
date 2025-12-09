@@ -1,0 +1,8 @@
+Django>=4.2
+gunicorn
+whitenoise
+pillow
+django-crispy-forms
+crispy-bootstrap5
+razorpay
+psycopg2-binary

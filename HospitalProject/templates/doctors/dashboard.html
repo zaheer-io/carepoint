@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Doctor Dashboard - Care Point Hospital{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Welcome, Dr. {{ request.user.first_name|default:request.user.username }}!</h1>
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon warning">📅</div>
+                <div class="stat-content">
+                    <h3>{{ today_appointments.count }}</h3>
+                    <p>Today's Appointments</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon primary">⏳</div>
+                <div class="stat-content">
+                    <h3>{{ upcoming_appointments.count }}</h3>
+                    <p>Upcoming</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon success">✅</div>
+                <div class="stat-content">
+                    <h3>{{ completed_appointments }}</h3>
+                    <p>Completed</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon info">📊</div>
+                <div class="stat-content">
+                    <h3>{{ total_appointments }}</h3>
+                    <p>Total Appointments</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Today's Appointments -->
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-between align-center">
+                <h4>Today's Appointments</h4>
+                <a href="{% url 'doctors:appointment_list' %}" class="btn btn-sm btn-secondary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if today_appointments %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Patient</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for apt in today_appointments %}
+                            <tr>
+                                <td>{{ apt.scheduled_datetime|time:"H:i" }}</td>
+                                <td>{{ apt.patient }}</td>
+                                <td>{{ apt.reason|truncatewords:5|default:"-" }}</td>
+                                <td><span class="badge badge-{{ apt.status }}">{{ apt.get_status_display }}</span></td>
+                                <td>
+                                    <a href="{% url 'doctors:appointment_detail' apt.pk %}" class="btn btn-sm btn-secondary">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <p>No appointments scheduled for today</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Upcoming Appointments -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Upcoming Appointments</h4>
+            </div>
+            <div class="card-body">
+                {% if upcoming_appointments %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Patient</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for apt in upcoming_appointments %}
+                            <tr>
+                                <td>{{ apt.scheduled_datetime|date:"M d, Y H:i" }}</td>
+                                <td>{{ apt.patient }}</td>
+                                <td><span class="badge badge-{{ apt.status }}">{{ apt.get_status_display }}</span></td>
+                                <td>
+                                    <a href="{% url 'doctors:appointment_detail' apt.pk %}" class="btn btn-sm btn-secondary">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <p>No upcoming appointments</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Doctors - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Doctors</h1>
+        </div>
+        
+        <div class="card mb-3">
+            <div class="card-body">
+                <form method="get" class="d-flex gap-2 align-center">
+                    <select name="status" class="form-control" style="max-width: 200px;">
+                        <option value="">All Doctors</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending Approval</option>
+                        <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+                    </select>
+                    <button type="submit" class="btn btn-secondary">Filter</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                {% if doctors %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doc in doctors %}
+                            <tr>
+                                <td><strong>Dr. {{ doc.user.get_full_name|default:doc.user.username }}</strong></td>
+                                <td>{{ doc.user.email }}</td>
+                                <td>{{ doc.department.name|default:"-" }}</td>
+                                <td>
+                                    {% if doc.user.is_approved %}
+                                    <span class="badge badge-success">Approved</span>
+                                    {% else %}
+                                    <span class="badge badge-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td class="action-buttons">
+                                    <a href="{% url 'adminpanel:doctor_detail' doc.pk %}" class="btn btn-sm btn-secondary">View</a>
+                                    {% if not doc.user.is_approved %}
+                                    <a href="{% url 'adminpanel:doctor_approve' doc.pk %}" class="btn btn-sm btn-success">Approve</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><p>No doctors found</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

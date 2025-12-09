@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Doctor Registration - Care Point Hospital{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card" style="max-width: 500px;">
+        <div class="auth-header">
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin-bottom: 1rem;">
+                <svg viewBox="0 0 24 24" fill="currentColor" style="width: 40px; height: 40px;">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/>
+                </svg>
+                Care Point
+            </div>
+            <h1>Doctor Registration</h1>
+            <p>Join our medical team</p>
+        </div>
+        
+        <div class="alert alert-info">
+            <strong>Note:</strong> Your account will need admin approval before you can access the doctor dashboard.
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="id_first_name">First Name</label>
+                    <input type="text" name="first_name" id="id_first_name" class="form-control" required value="{{ form.first_name.value|default:'' }}">
+                </div>
+                <div class="form-group">
+                    <label for="id_last_name">Last Name</label>
+                    <input type="text" name="last_name" id="id_last_name" class="form-control" required value="{{ form.last_name.value|default:'' }}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                <input type="text" name="username" id="id_username" class="form-control" required value="{{ form.username.value|default:'' }}">
+                {% if form.username.errors %}<small class="text-danger">{{ form.username.errors.0 }}</small>{% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_email">Email</label>
+                <input type="email" name="email" id="id_email" class="form-control" required value="{{ form.email.value|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label for="id_phone">Phone</label>
+                <input type="tel" name="phone" id="id_phone" class="form-control" required value="{{ form.phone.value|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label for="id_password1">Password</label>
+                <input type="password" name="password1" id="id_password1" class="form-control" required>
+                {% if form.password1.errors %}<small class="text-danger">{{ form.password1.errors.0 }}</small>{% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_password2">Confirm Password</label>
+                <input type="password" name="password2" id="id_password2" class="form-control" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 btn-lg">Submit Application</button>
+        </form>
+        
+        <div class="auth-footer">
+            <a href="{% url 'accounts:home' %}" class="btn-back-home">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Home
+            </a>
+            <p style="margin-top: 1rem;">Already have an account? <a href="{% url 'accounts:login' %}">Login here</a></p>
+            <p class="mt-1"><a href="{% url 'accounts:register_choice' %}">← Back to registration options</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

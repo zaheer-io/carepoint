@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Doctor Details - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Doctor Profile</h1>
+            <a href="{% url 'adminpanel:doctor_list' %}" class="btn btn-secondary">← Back to List</a>
+        </div>
+        
+        <!-- Profile Header -->
+        <div class="profile-header-card">
+            <div class="profile-avatar">
+                {% if doctor.user.profile_picture %}
+                <img src="{{ doctor.user.profile_picture.url }}" alt="{{ doctor.user.get_full_name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                {% else %}
+                {{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}
+                {% endif %}
+            </div>
+            
+            <div class="profile-info" style="flex: 1;">
+                <h2>Dr. {{ doctor.user.get_full_name|default:doctor.user.username }}</h2>
+                <div class="profile-badges">
+                    <span class="badge badge-primary">{{ doctor.department.name|default:"General" }}</span>
+                    {% if doctor.user.is_approved %}
+                    <span class="badge badge-success">Approved</span>
+                    {% else %}
+                    <span class="badge badge-warning">Pending Approval</span>
+                    {% endif %}
+                </div>
+                <div class="action-buttons">
+                    {% if not doctor.user.is_approved %}
+                    <a href="{% url 'adminpanel:doctor_approve' doctor.pk %}" class="btn btn-success btn-sm">✓ Approve Doctor</a>
+                    {% else %}
+                    <a href="{% url 'adminpanel:doctor_reject' doctor.pk %}" class="btn btn-warning btn-sm">✕ Revoke Approval</a>
+                    {% endif %}
+                    <a href="{% url 'adminpanel:doctor_edit' doctor.pk %}" class="btn btn-secondary btn-sm">✎ Edit Profile</a>
+                </div>
+            </div>
+            
+            <div class="stat-card" style="min-width: 200px; padding: 1rem;">
+                <div class="stat-content">
+                    <h3>{{ total_appointments }}</h3>
+                    <p>Total Appointments</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="detail-grid">
+            <!-- Left Column: Personal & Professional Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h4>Professional Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="label">Specialization</span>
+                        <span class="value">{{ doctor.specialization|default:"-" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Qualifications</span>
+                        <span class="value">{{ doctor.qualifications|default:"-" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Experience</span>
+                        <span class="value">{{ doctor.experience_years }} years</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Consultation Fee</span>
+                        <span class="value">₹{{ doctor.consultation_fee }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Availability</span>
+                        <span class="value">
+                            {% if doctor.available_from and doctor.available_to %}
+                            {{ doctor.available_from|time:"H:i" }} - {{ doctor.available_to|time:"H:i" }}
+                            {% else %}
+                            Not set
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-header" style="border-top: 1px solid var(--border-color);">
+                    <h4>Contact Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="label">Email</span>
+                        <span class="value">{{ doctor.user.email }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Phone</span>
+                        <span class="value">{{ doctor.user.phone|default:"-" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Joined Date</span>
+                        <span class="value">{{ doctor.user.date_joined|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column: Bio & Other -->
+            <div>
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h4>About</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if doctor.bio %}
+                        <p style="color: var(--text-secondary); line-height: 1.6;">{{ doctor.bio|linebreaks }}</p>
+                        {% else %}
+                        <p class="text-muted">No bio available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Performance</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-between mb-4">
+                            <div>
+                                <h5 class="mb-0">Appointment Status</h5>
+                                <small class="text-secondary">Overview of all time</small>
+                            </div>
+                            <div class="text-right">
+                                <span class="badge badge-success">{{ completed_appointments }} Completed</span>
+                            </div>
+                        </div>
+                        
+                        <div class="simple-bar-chart">
+                            {% widthratio total_appointments 1 1 as max_val %}
+                            
+                            <!-- Pending -->
+                            <div class="chart-bar-container">
+                                {% widthratio pending_appointments max_val 100 as pending_pct %}
+                                <div class="chart-bar" style="height: {{ pending_pct|default:1 }}%; background: var(--warning-color);" title="{{ pending_appointments }} Pending"></div>
+                                <span class="chart-label">Pending</span>
+                            </div>
+                            
+                            <!-- Completed -->
+                            <div class="chart-bar-container">
+                                {% widthratio completed_appointments max_val 100 as completed_pct %}
+                                <div class="chart-bar" style="height: {{ completed_pct|default:1 }}%; background: var(--success-color);" title="{{ completed_appointments }} Completed"></div>
+                                <span class="chart-label">Done</span>
+                            </div>
+                            
+                            <!-- Cancelled -->
+                            <div class="chart-bar-container">
+                                {% widthratio cancelled_appointments max_val 100 as cancelled_pct %}
+                                <div class="chart-bar" style="height: {{ cancelled_pct|default:1 }}%; background: var(--danger-color);" title="{{ cancelled_appointments }} Cancelled"></div>
+                                <span class="chart-label">Cancelled</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 text-center">
+                            <small class="text-secondary">Total: {{ total_appointments }} Appointments</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

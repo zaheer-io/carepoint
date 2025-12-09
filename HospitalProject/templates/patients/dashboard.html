@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Patient Dashboard - Care Point Hospital{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Welcome, {{ request.user.first_name|default:request.user.username }}!</h1>
+            <a href="{% url 'patients:book_appointment' %}" class="btn btn-primary">+ Book Appointment</a>
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon primary">📅</div>
+                <div class="stat-content">
+                    <h3>{{ upcoming_appointments.count }}</h3>
+                    <p>Upcoming Appointments</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon success">✅</div>
+                <div class="stat-content">
+                    <h3>{{ completed_appointments }}</h3>
+                    <p>Completed Visits</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon info">💊</div>
+                <div class="stat-content">
+                    <h3>{{ recent_prescriptions.count }}</h3>
+                    <p>Prescriptions</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid grid-2">
+            <!-- Upcoming Appointments -->
+            <div class="card">
+                <div class="card-header d-flex justify-between align-center">
+                    <h4>Upcoming Appointments</h4>
+                    <a href="{% url 'patients:appointment_history' %}" class="btn btn-sm btn-secondary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_appointments %}
+                    <ul style="list-style: none;">
+                        {% for apt in upcoming_appointments %}
+                        <li style="padding: 1rem 0; border-bottom: 1px solid var(--border-color);">
+                            <div class="d-flex justify-between align-center">
+                                <div>
+                                    <strong>{{ apt.doctor.full_name }}</strong>
+                                    <p class="text-secondary" style="font-size: 0.875rem;">{{ apt.department.name }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="badge badge-{{ apt.status }}">{{ apt.get_status_display }}</span>
+                                    <p class="text-secondary" style="font-size: 0.875rem;">{{ apt.scheduled_datetime|date:"M d, Y H:i" }}</p>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="empty-state">
+                        <p>No upcoming appointments</p>
+                        <a href="{% url 'patients:book_appointment' %}" class="btn btn-primary btn-sm mt-2">Book Now</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Recent Prescriptions -->
+            <div class="card">
+                <div class="card-header d-flex justify-between align-center">
+                    <h4>Recent Prescriptions</h4>
+                    <a href="{% url 'patients:prescription_list' %}" class="btn btn-sm btn-secondary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_prescriptions %}
+                    <ul style="list-style: none;">
+                        {% for rx in recent_prescriptions %}
+                        <li style="padding: 1rem 0; border-bottom: 1px solid var(--border-color);">
+                            <div class="d-flex justify-between align-center">
+                                <div>
+                                    <strong>{{ rx.appointment.doctor.full_name }}</strong>
+                                    <p class="text-secondary" style="font-size: 0.875rem;">{{ rx.diagnosis|truncatewords:5 }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <a href="{% url 'patients:prescription_detail' rx.pk %}" class="btn btn-sm btn-secondary">View</a>
+                                    <p class="text-secondary" style="font-size: 0.875rem;">{{ rx.created_at|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="empty-state">
+                        <p>No prescriptions yet</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

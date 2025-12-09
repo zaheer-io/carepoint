@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+{% block title %}Pharmacy Orders - Admin Panel{% endblock %}
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    <main class="main-content">
+        <div class="page-header"><h1 class="page-title">Pharmacy Orders</h1></div>
+        <div class="card mb-3">
+            <div class="card-body">
+                <form method="get" class="d-flex gap-2 align-center">
+                    <select name="status" class="form-control" style="max-width: 200px;">
+                        <option value="">All Status</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="paid" {% if status_filter == 'paid' %}selected{% endif %}>Paid</option>
+                        <option value="processing" {% if status_filter == 'processing' %}selected{% endif %}>Processing</option>
+                        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+                    </select>
+                    <button type="submit" class="btn btn-secondary">Filter</button>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                {% if orders %}
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Order #</th><th>Patient</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td>#{{ order.pk }}</td>
+                                <td>{{ order.patient }}</td>
+                                <td>₹{{ order.total_amount }}</td>
+                                <td><span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span></td>
+                                <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                <td><a href="{% url 'adminpanel:pharmacy_order_detail' order.pk %}" class="btn btn-sm btn-secondary">View</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><p>No orders yet</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

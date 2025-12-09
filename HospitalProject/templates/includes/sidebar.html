@@ -1,0 +1,66 @@
+{% load static %}
+<!-- Dynamic Sidebar based on user role -->
+<aside class="sidebar">
+    <a href="{% url 'accounts:home' %}" class="sidebar-brand">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width: 32px; height: 32px;">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/>
+        </svg>
+        Care Point
+    </a>
+    
+    {% if request.user.is_superuser or request.user.is_admin_user %}
+    <!-- Admin Sidebar -->
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'adminpanel:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">📊 Dashboard</a></li>
+    </ul>
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Management</div>
+        <ul class="sidebar-nav">
+            <li><a href="{% url 'adminpanel:department_list' %}">🏥 Departments</a></li>
+            <li><a href="{% url 'adminpanel:doctor_list' %}">👨‍⚕️ Doctors</a></li>
+            <li><a href="{% url 'adminpanel:patient_list' %}">🧑 Patients</a></li>
+            <li><a href="{% url 'adminpanel:appointment_list' %}">📅 Appointments</a></li>
+        </ul>
+    </div>
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Pharmacy</div>
+        <ul class="sidebar-nav">
+            <li><a href="{% url 'adminpanel:medicine_list' %}">💊 Medicines</a></li>
+            <li><a href="{% url 'adminpanel:pharmacy_order_list' %}">📦 Orders</a></li>
+        </ul>
+    </div>
+    
+    {% elif request.user.is_patient %}
+    <!-- Patient Sidebar -->
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'patients:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">📊 Dashboard</a></li>
+        <li><a href="{% url 'patients:book_appointment' %}" class="{% if request.resolver_match.url_name == 'book_appointment' %}active{% endif %}">📅 Book Appointment</a></li>
+        <li><a href="{% url 'patients:appointment_history' %}" class="{% if request.resolver_match.url_name == 'appointment_history' %}active{% endif %}">📋 My Appointments</a></li>
+        <li><a href="{% url 'patients:prescription_list' %}" class="{% if request.resolver_match.url_name == 'prescription_list' %}active{% endif %}">💊 Prescriptions</a></li>
+    </ul>
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Pharmacy</div>
+        <ul class="sidebar-nav">
+            <li><a href="{% url 'pharmacy:medicine_list' %}">🏪 Browse Medicines</a></li>
+            <li><a href="{% url 'pharmacy:view_cart' %}">🛒 Cart</a></li>
+            <li><a href="{% url 'pharmacy:order_history' %}">📦 My Orders</a></li>
+        </ul>
+    </div>
+    
+    {% elif request.user.is_doctor %}
+    <!-- Doctor Sidebar -->
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'doctors:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">📊 Dashboard</a></li>
+        <li><a href="{% url 'doctors:appointment_list' %}" class="{% if request.resolver_match.url_name == 'appointment_list' %}active{% endif %}">📅 Appointments</a></li>
+        <li><a href="{% url 'doctors:edit_profile' %}" class="{% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">👤 My Profile</a></li>
+    </ul>
+    {% endif %}
+    
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Account</div>
+        <ul class="sidebar-nav">
+            <li><a href="{% url 'accounts:profile' %}">⚙️ Settings</a></li>
+            <li><a href="{% url 'accounts:logout' %}">🚪 Logout</a></li>
+        </ul>
+    </div>
+</aside>

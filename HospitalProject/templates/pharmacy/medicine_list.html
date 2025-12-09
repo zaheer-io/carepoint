@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+{% block title %}Pharmacy - Care Point Hospital{% endblock %}
+{% block content %}
+<nav class="navbar"><div class="container">
+    <a href="{% url 'accounts:home' %}" class="navbar-brand">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width: 40px; height: 40px;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/></svg>Care Point
+    </a>
+    <ul class="navbar-nav">
+        <li><a href="{% url 'departments:list' %}">Departments</a></li>
+        <li><a href="{% url 'pharmacy:medicine_list' %}">Pharmacy</a></li>
+        {% if request.user.is_authenticated %}
+        <li><a href="{% url 'pharmacy:view_cart' %}" class="btn btn-secondary btn-sm">🛒 Cart</a></li>
+        <li><a href="{% url 'accounts:redirect_after_login' %}" class="btn btn-primary btn-sm">Dashboard</a></li>
+        {% else %}
+        <li><a href="{% url 'accounts:login' %}" class="btn btn-primary btn-sm">Login</a></li>
+        {% endif %}
+    </ul>
+</div></nav>
+<div class="container" style="padding: 3rem 0;">
+    <h1 class="mb-3">Pharmacy</h1>
+    <form method="get" class="mb-3 d-flex gap-2">
+        <input type="text" name="search" class="form-control" placeholder="Search medicines..." value="{{ search }}" style="max-width: 300px;">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    <div class="grid grid-4">
+        {% for med in medicines %}
+        <div class="card">
+            <div class="card-body">
+                <h5>{{ med.name }}</h5>
+                <p class="text-secondary">{{ med.generic_name|default:"" }}</p>
+                <p class="text-primary" style="font-size: 1.25rem; font-weight: 600;">₹{{ med.price }}</p>
+                <p class="text-secondary">{{ med.stock }} {{ med.unit }} in stock</p>
+                {% if med.prescription_required %}<span class="badge badge-warning">Rx Required</span>{% endif %}
+                {% if request.user.is_authenticated and request.user.is_patient %}
+                <form method="post" action="{% url 'pharmacy:add_to_cart' med.pk %}" class="mt-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">Add to Cart</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state" style="grid-column: 1/-1;"><p>No medicines available</p></div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

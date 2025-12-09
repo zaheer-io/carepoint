@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+{% block title %}{{ medicine.name }} - Care Point Pharmacy{% endblock %}
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    <main class="main-content">
+        <a href="{% url 'pharmacy:medicine_list' %}" class="btn btn-secondary mb-3">← Back to Pharmacy</a>
+        <div class="card" style="max-width: 600px;">
+            <div class="card-body">
+                <h2>{{ medicine.name }}</h2>
+                <p class="text-secondary">{{ medicine.generic_name|default:"" }}</p>
+                <p>{{ medicine.description|default:"Quality medicine for your health needs." }}</p>
+                <p><strong>Manufacturer:</strong> {{ medicine.manufacturer|default:"-" }}</p>
+                <p class="text-primary" style="font-size: 1.5rem; font-weight: 700;">₹{{ medicine.price }} / {{ medicine.unit }}</p>
+                <p>Stock: {{ medicine.stock }} available</p>
+                {% if medicine.prescription_required %}<div class="alert alert-warning">Prescription required for this medicine</div>{% endif %}
+                <form method="post" action="{% url 'pharmacy:add_to_cart' medicine.pk %}">
+                    {% csrf_token %}
+                    <div class="d-flex gap-2 align-center">
+                        {{ add_form.quantity }}
+                        <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Appointment Details - Care Point Hospital{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Appointment Details</h1>
+            <a href="{% url 'patients:appointment_history' %}" class="btn btn-secondary">← Back to History</a>
+        </div>
+        
+        <div class="detail-grid">
+            <!-- Left Column: Appointment Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h4>Visit Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <span class="label">Status</span>
+                        <span class="value"><span class="badge badge-{{ appointment.status }}">{{ appointment.get_status_display }}</span></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Date & Time</span>
+                        <span class="value">
+                            {{ appointment.scheduled_datetime|date:"l, F d, Y" }}<br>
+                            {{ appointment.scheduled_datetime|time:"H:i" }} ({{ appointment.duration_minutes }} min)
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Reason</span>
+                        <span class="value">{{ appointment.reason|default:"No reason provided" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">Payment</span>
+                        <span class="value">
+                            <span class="badge badge-{{ appointment.payment_status }}">{{ appointment.get_payment_status_display }}</span>
+                            <span class="ml-2" style="font-weight: 600;">₹{{ appointment.doctor.consultation_fee }}</span>
+                        </span>
+                    </div>
+                    
+                    {% if appointment.status == 'confirmed' and appointment.payment_status == 'unpaid' %}
+                    <div class="mt-4">
+                        <a href="{% url 'billing:payment' 'appointment' appointment.pk %}" class="btn btn-primary w-100 btn-lg">
+                            💳 Pay Now (₹{{ appointment.doctor.consultation_fee }})
+                        </a>
+                        <p class="text-center mt-2 text-secondary" style="font-size: 0.85rem;">Secure payment via Razorpay</p>
+                    </div>
+                    {% elif appointment.payment_status == 'paid' %}
+                    <div class="mt-4">
+                        <div class="alert alert-success text-center">
+                            <span style="font-size: 1.2rem;">✓</span> Payment Completed
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if appointment.can_cancel %}
+                    <div class="mt-3">
+                        <a href="{% url 'patients:cancel_appointment' appointment.pk %}" class="btn btn-danger w-100" onclick="return confirm('Are you sure you want to cancel this appointment?');">✕ Cancel Appointment</a>
+                        <p class="text-secondary text-center mt-2" style="font-size: 0.8rem;">Free cancellation for pending appointments</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Right Column: Doctor Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h4>Doctor Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-center gap-3 mb-4">
+                        <div style="width: 60px; height: 60px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.5rem;">
+                            Dr
+                        </div>
+                        <div>
+                            <h4 style="margin: 0;">Dr. {{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</h4>
+                            <p class="text-secondary" style="margin: 0; font-size: 0.9rem;">{{ appointment.doctor.specialization|default:"General Physician" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="label">Department</span>
+                        <span class="value">{{ appointment.department.name }}</span>
+                    </div>
+                    
+                    {% if appointment.doctor.qualifications %}
+                    <div class="info-row">
+                        <span class="label">Qualifications</span>
+                        <span class="value">{{ appointment.doctor.qualifications }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if appointment.doctor.experience %}
+                    <div class="info-row">
+                        <span class="label">Experience</span>
+                        <span class="value">{{ appointment.doctor.experience }} years</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-4 pt-3" style="border-top: 1px solid var(--border-color);">
+                        <h5 class="text-secondary mb-3" style="font-size: 0.8rem; text-transform: uppercase;">Contact Information</h5>
+                        <div style="font-size: 0.95rem;">
+                            {% if appointment.doctor.user.phone %}
+                            <div class="mb-2">
+                                <span style="color: var(--text-secondary);">📞</span> 
+                                <strong>{{ appointment.doctor.user.phone }}</strong>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <span style="color: var(--text-secondary);">📧</span> 
+                                <span>{{ appointment.doctor.user.email }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if appointment.status == 'completed' and appointment.prescription %}
+        <div class="card mt-3">
+            <div class="card-header" style="background: var(--success-color); color: white;">
+                <h4 style="margin: 0;">📋 Prescription</h4>
+            </div>
+            <div class="card-body">
+                <div class="grid grid-2 mb-4">
+                    <div class="card" style="border: 1px solid var(--border-color); box-shadow: none;">
+                        <div class="card-body py-2">
+                            <h5 class="text-secondary" style="font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.5rem;">Diagnosis</h5>
+                            <p style="font-weight: 500; margin: 0;">{{ appointment.prescription.diagnosis }}</p>
+                        </div>
+                    </div>
+                    {% if appointment.prescription.notes %}
+                    <div class="card" style="border: 1px solid var(--border-color); box-shadow: none;">
+                        <div class="card-body py-2">
+                            <h5 class="text-secondary" style="font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.5rem;">Doctor's Notes</h5>
+                            <p style="margin: 0;">{{ appointment.prescription.notes }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <h5 class="mb-3" style="padding-bottom: 0.5rem; border-bottom: 2px solid var(--border-color); display: inline-block;">💊 Prescribed Medicines</h5>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr style="background: var(--bg-primary);">
+                                <th>Medicine</th>
+                                <th>Dosage</th>
+                                <th>Frequency</th>
+                                <th>Duration</th>
+                                <th>Instructions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in appointment.prescription.items.all %}
+                            <tr>
+                                <td><strong class="text-primary">{{ item.medicine_name }}</strong></td>
+                                <td>{{ item.dosage }}</td>
+                                <td>{{ item.frequency }}</td>
+                                <td>{{ item.duration }}</td>
+                                <td class="text-secondary">{{ item.instructions|default:"-" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center text-muted">No medicines prescribed</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <a href="{% url 'patients:prescription_detail' appointment.prescription.pk %}" class="btn btn-secondary">View Full Prescription</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

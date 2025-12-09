@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+{% block title %}Invoices - Care Point Hospital{% endblock %}
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    <main class="main-content">
+        <div class="page-header"><h1 class="page-title">My Invoices</h1></div>
+        <div class="card">
+            <div class="card-body">
+                {% if invoices %}
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>#</th><th>Type</th><th>Amount</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+                        <tbody>
+                            {% for inv in invoices %}
+                            <tr>
+                                <td>{{ inv.pk }}</td>
+                                <td>{{ inv.get_invoice_type_display }}</td>
+                                <td>₹{{ inv.amount }}</td>
+                                <td><span class="badge badge-{{ inv.status }}">{{ inv.get_status_display }}</span></td>
+                                <td>{{ inv.created_at|date:"M d, Y" }}</td>
+                                <td><a href="{% url 'billing:invoice_detail' inv.pk %}" class="btn btn-sm btn-secondary">View</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><p>No invoices yet</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

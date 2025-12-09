@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %} 
+        <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    {% endblock %}
+
+{% block title %}Admin Dashboard - Care Point Hospital{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    {% include 'includes/sidebar.html' %}
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Admin Dashboard</h1>
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon primary">👨‍⚕️</div>
+                <div class="stat-content">
+                    <h3>{{ total_doctors }}</h3>
+                    <p>Total Doctors</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon warning">⏳</div>
+                <div class="stat-content">
+                    <h3>{{ pending_doctors }}</h3>
+                    <p>Pending Approvals</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon info">🧑</div>
+                <div class="stat-content">
+                    <h3>{{ total_patients }}</h3>
+                    <p>Total Patients</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon success">📅</div>
+                <div class="stat-content">
+                    <h3>{{ today_appointments }}</h3>
+                    <p>Today's Appointments</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Revenue Stats -->
+        <div class="grid grid-2 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon success">💰</div>
+                <div class="stat-content">
+                    <h3>₹{{ monthly_revenue|floatformat:0 }}</h3>
+                    <p>This Month Revenue</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon primary">💵</div>
+                <div class="stat-content">
+                    <h3>₹{{ total_revenue|floatformat:0 }}</h3>
+                    <p>Total Revenue</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid grid-2">
+            <!-- Pending Doctor Approvals -->
+            <div class="card">
+                <div class="card-header d-flex justify-between align-center">
+                    <h4>Pending Doctor Approvals</h4>
+                    <a href="{% url 'adminpanel:doctor_list' %}?status=pending" class="btn btn-sm btn-secondary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if pending_doctor_approvals %}
+                    <ul style="list-style: none;">
+                        {% for doc in pending_doctor_approvals %}
+                        <li style="padding: 1rem 0; border-bottom: 1px solid var(--border-color);">
+                            <div class="d-flex justify-between align-center">
+                                <div>
+                                    <strong>Dr. {{ doc.get_full_name }}</strong>
+                                    <p class="text-secondary" style="font-size: 0.875rem;">{{ doc.email }}</p>
+                                </div>
+                                <a href="{% url 'adminpanel:doctor_detail' doc.doctor_profile.pk %}" class="btn btn-sm btn-primary">Review</a>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="empty-state">
+                        <p>No pending approvals</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Recent Appointments -->
+            <div class="card">
+                <div class="card-header d-flex justify-between align-center">
+                    <h4>Recent Appointments</h4>
+                    <a href="{% url 'adminpanel:appointment_list' %}" class="btn btn-sm btn-secondary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_appointments %}
+                    <ul style="list-style: none;">
+                        {% for apt in recent_appointments %}
+                        <li style="padding: 1rem 0; border-bottom: 1px solid var(--border-color);">
+                            <div class="d-flex justify-between align-center">
+                                <div>
+                                    <strong>{{ apt.patient }}</strong>
+                                    <p class="text-secondary" style="font-size: 0.875rem;">with {{ apt.doctor.full_name }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="badge badge-{{ apt.status }}">{{ apt.get_status_display }}</span>
+                                    <p class="text-secondary" style="font-size: 0.875rem;">{{ apt.scheduled_datetime|date:"M d" }}</p>
+                                </div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="empty-state">
+                        <p>No recent appointments</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
